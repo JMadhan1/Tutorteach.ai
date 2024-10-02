@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TutorTeach.ai</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            letter-spacing: 2px;
+        }
+        form {
+            max-width: 500px;
+            margin: 40px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus, textarea:focus {
+            border-color: #4CAF50;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            margin-top: 20px;
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        video {
+            width: 100%;
+            max-width: 500px;
+            display: block;
+            margin: 20px auto;
+            border-radius: 10px;
+        }
+        p {
+            text-align: center;
+        }
+        .next-btn {
+            display: block;
+            margin: 20px auto;
+            width: 150px;
+            background-color: #f9c74f;
+            color: #333;
+        }
+        .next-btn:hover {
+            background-color: #f9b24f;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>TutorTeach.ai</h1>
+    </header>
+
+    <!-- Input Topic Form -->
+    <form id="topicForm">
+        <label for="topic">Enter Topic:</label>
+        <input type="text" id="topic" name="topic" placeholder="Enter your topic..." required>
+        <button type="submit">Generate Video</button>
+    </form>
+
+    <!-- Result Section -->
+    <div id="result">
+        <h2>Generated Video</h2>
+        <video id="video" controls></video>
+        
+        <h2>Text Summarization</h2>
+        <textarea id="transcript" rows="5" cols="50" placeholder="Paste the transcript..." style="display:none;"></textarea>
+        <button id="summarizeBtn" style="display:none;">Summarize Text</button>
+
+        <h2>Summary:</h2>
+        <p id="summary"></p>
+
+        <h2>Assignment Questions:</h2>
+        <button id="generateQuestionsBtn" style="display:none;">Generate Assignment Questions</button>
+        <p id="questions"></p>
+        
+        <button class="next-btn" id="nextPageBtn" style="display:none;">Next Page</button>
+    </div>
+
+    <!-- Script for AJAX and Interactions -->
+    <script>
+        document.getElementById('topicForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+            const topic = document.getElementById('topic').value;
+            fetch('/generate_video', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `topic=${encodeURIComponent(topic)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                const videoElement = document.getElementById('video');
+                videoElement.src = data.video_url;
+                document.getElementById('result').style.display = 'block';
+                document.getElementById('transcript').style.display = 'block';
+                document.getElementById('summarizeBtn').style.display = 'inline-block';
+            });
+        });
+
+        document.getElementById('summarizeBtn').addEventListener('click', function() {
+            const transcript = document.getElementById('transcript').value;
+            fetch('/summarize_text', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `text=${encodeURIComponent(transcript)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('summary').textContent = data.summary;
+                document.getElementById('generateQuestionsBtn').style.display = 'inline-block';
+            });
+        });
+
+        document.getElementById('generateQuestionsBtn').addEventListener('click', function() {
+            const summary = document.getElementById('summary').textContent;
+            fetch('/generate_questions', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: `summary=${encodeURIComponent(summary)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('questions').textContent = data.questions;
+                document.getElementById('nextPageBtn').style.display = 'inline-block';
+            });
+        });
+
+        document.getElementById('nextPageBtn').addEventListener('click', function() {
+            const summary = document.getElementById('summary').textContent;
+            const questions = document.getElementById('questions').textContent;
+            window.location.href = `/assignment?summary=${encodeURIComponent(summary)}&questions=${encodeURIComponent(questions)}`;
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Score Prediction</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
+        header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        p {
+            text-align: center;
+            font-size: 1.2em;
+        }
+        .performance {
+            background: white;
+            margin: 40px auto;
+            padding: 20px;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Your Score Prediction</h1>
+    </header>
+    <div class="performance">
+        <h2>Your Score: {{ score }}</h2>
+        <p>We will analyze your performance and strengths/weaknesses.</p>
+        <!-- Implement your performance analysis logic here -->
+        <p>Keep working hard! Focus on your weaker areas to improve your skills.</p>
+    </div>
+</body>
+</html>
